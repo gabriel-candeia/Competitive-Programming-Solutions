@@ -12,8 +12,12 @@ ll products(vector<ll>& k,ll t){
     return num;
 }
 
+ll min(ll a, ll b){
+    return (a<b) ? a : b;
+}
+
 int main(){
-    ll n, t;
+    ll n, t, mn = 1e10;
     vector<ll> k;
 
     cin >> n >> t;
@@ -21,9 +25,10 @@ int main(){
 
     for(int i=0;i<n;i++){
         cin >> k[i];
+        mn = min(k[i],mn);
     }
 
-    ll l=0, r=1e18/n, med, comp, answ=-1;
+    ll l=0, r=1ll*t*mn, med, comp, answ=-1;
     while(l<=r){
         med = l + (r-l)/2;
         comp = products(k,med);

@@ -36,7 +36,7 @@ int main(){
     sort(s.begin(),s.end());
 
     ll cnt=0, best=n+m, ptr=0;
-//D(s.size());
+    //D(s.size());
     for(int i=0;i<=n;i++){
         while(ptr<s.size() && s[ptr]<x[i]){
             ptr++;

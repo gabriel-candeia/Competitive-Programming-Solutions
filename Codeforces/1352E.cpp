@@ -2,7 +2,8 @@
 using namespace std;
 
 int main(){
-    int t, n;
+    int t;
+    int n;
     vector<int> arr;
 
     cin >> t;

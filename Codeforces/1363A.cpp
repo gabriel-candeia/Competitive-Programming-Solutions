@@ -3,7 +3,7 @@ using namespace std;
 
 int main(){
     int t;
-    int x, n, a, p, odd, even;
+    int x, n, p, odd, even, a;
 
     cin >> t;
     while(t--){
@@ -14,8 +14,15 @@ int main(){
             odd+=a%2;
         }
         even = n-odd;
+        bool poss = false;
+        for(int i=1;i<=min(odd,x);i+=2){
+            if(i+even>=x){
+                poss = true;
+                break;
+            }
+        }
 
-        if((x%2 && (odd-(odd%2==0)+even-(even%2==1))>=x) || (x%2==0 && odd>=1 && even>=1 && (odd-(odd%2==0)+even-(even%2==0))>=x)){
+        if(poss){
             cout << "Yes\n";
         }
         else{

@@ -8,7 +8,7 @@ int main(){
     cout << min(n,m)+1 << '\n';
     for(int i=0;i<=min(n,m);i++){
         cout << i << " " << m-i << '\n';
-    }
-
+    }   
+    
     return 0;
 }

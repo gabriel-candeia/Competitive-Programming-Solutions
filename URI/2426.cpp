@@ -1,52 +1,50 @@
 #include<bits/stdc++.h>
 #define N 1000
-
 using namespace std;
-int tempo(vector<pair<int,int>> adj[N], int n, int u, int v){
-    vector<int> dist; dist.assign(n+1,INT_MAX);
-    priority_queue<pair<int,int>> h;
-    pair<int,int> wp; 
+
+int n, u, v, m;
+int x, y, z;
+vector<pair<int,int>> adj[N];
+const int inf = 1e9;
+
+int bfs(int u, int v){
+    
+    vector<int> dist[3];    
+    for(auto &v:dist)
+        v = vector<int>(n+1,inf);
+    queue<pair<int,int>> q;
+    pair<int,int> p;
     int w, d;
-    vector<bool> visited; visited.assign(n+1,false);
+    
+    q.push({u,0});
+    dist[0][u] = 0;
 
-    dist[u] = 0;
-    visited[u] = true;
-    h.push(make_pair(dist[u],u));
+    while(q.size()){
+        tie(w, d) = q.front(); q.pop();
 
-    while(h.size()){
-        wp = h.top(); 
-        h.pop();
-        w = wp.second; d = wp.first;
-
-        for(auto i: adj[w]){
-            if(((d)%3==0)==i.second && d+1<dist[v] && (visited[i.first]!=true || (d+1-dist[i.first])%3)){
-                dist[i.first] = d+1;
-                h.push(make_pair(dist[i.first],i.first));
-                visited[w] = true;
+        for(auto e:adj[w]){
+            int v = e.first, t = e.second;
+            if(((!t&&d%3)||(t&&!(d%3))) && dist[(d+1)%3][v]>d+1){
+                dist[(d+1)%3][v]=d+1;
+                q.push({v,d+1});
             }
         }
     }
-
-    return ((visited[v]) ? dist[v] : -1);
-}
+    
+    return min({dist[0][v],dist[1][v],dist[2][v]});
+}       
 
 int main(){
-    int n, u, v, m;
-    int x, y, z;
-    vector<pair<int,int>> adj[N];
-
     cin >> n >> u >> v >> m;
     while(m--){
         cin >> x >> y >> z;
         adj[x].push_back(make_pair(y,z));
     }
-    x = tempo(adj,n, u, v);
-    if(x==-1){
-        cout << "*\n" ;
-    }
-    else{
-        cout << x << '\n';    
-    }
+    x=bfs(u,v);
+    if((x==inf))
+        cout << '*' <<'\n';
+    else
+        cout << x  <<'\n';
 
     return 0;
 }

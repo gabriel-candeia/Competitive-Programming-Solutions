@@ -1,28 +1,27 @@
 #include<bits/stdc++.h>
-#define N 100010
-
+#define maxn int(1e5)+5
+#define ll long long
 using namespace std;
+
+ll dp[maxn][3], h[3][maxn], n;
+
+ll solve(ll n){
+    memset(dp,0,sizeof(dp));
+
+    for(int i=0;i<n;i++)
+        for(int j=0;j<3;j++){
+            dp[i+1][(j+1)%3] = max(dp[i+1][(j+1)%3],dp[i][j]+h[j][i]);
+            dp[i+1][(j+2)%3] = max(dp[i+1][(j+2)%3],dp[i][j]+h[j][i]);
+        }
+    
+    return max({dp[n][0],dp[n][1],dp[n][2]});
+}
+
 int main(){
-	int n, a[N],b[N],c[N], vacation[N][3];
+    cin >> n;
+    for(int i=0;i<n;i++)
+        cin >> h[0][i] >> h[1][i] >> h[2][i];
 
-	//input
-	cin >> n;
-	for(int i=0;i<n;i++){
-		cin >> a[i] >> b[i] >> c[i];
-	}
-
-	//alg
-	vacation[n+1][0] = 0;
-	vacation[n+1][1] = 0;
-	vacation[n+1][2] = 0;
-
-	for(int i=n;i>=0;i--){
-		vacation[i][0] = max(vacation[i+1][1],vacation[i+1][2]) + a[i];
-		vacation[i][1] = max(vacation[i+1][0],vacation[i+1][2]) + b[i];
-		vacation[i][2] = max(vacation[i+1][1],vacation[i+1][0]) + c[i];
-	}
-
-	cout << max(vacation[0][0],max(vacation[0][1],vacation[0][2])) << '\n';
-
-	return 0;
+    cout << solve(n) <<'\n';
+    return 0;
 }

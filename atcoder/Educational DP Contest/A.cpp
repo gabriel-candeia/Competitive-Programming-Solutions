@@ -1,25 +1,28 @@
 #include<bits/stdc++.h>
-#define N 100010
-
+#define ll long long
+#define maxn int(1e5)+5
 using namespace std;
 
+const ll inf = 1e17;
+ll dp[maxn], h[maxn], n;
+
+ll solve(int n){
+    for(int i=0;i<=n;i++)
+        dp[i] = inf;
+    dp[0] = 0;
+    
+    for(int i=0;i<n;i++)
+        for(int j=1;j<=2;j++)
+            dp[i+j] = min(dp[i+j],dp[i]+abs(h[i]-h[i+j]));
+    
+    return dp[n-1];
+}
+
 int main(){
-	int n, h[N], cost[N];
+    cin >> n;
+    for(int i=0;i<n;i++)
+        cin >> h[i];
 
-	//input
-	cin >> n;
-	for(int i=0;i<n;i++){
-		cin >> h[i];
-	}
-
-	//alg
-	cost[0]=0;
-	cost[1] = abs(h[1]-h[0]);
-	for(int i=2;i<n;i++){
-		cost[i] = min(cost[i-1]+abs(h[i]-h[i-1]),cost[i-2]+abs(h[i]-h[i-2]));
-	}
-
-	cout << cost[n-1] << '\n';
-
-	return 0;
+    cout << solve(n) <<'\n';
+    return 0;
 }

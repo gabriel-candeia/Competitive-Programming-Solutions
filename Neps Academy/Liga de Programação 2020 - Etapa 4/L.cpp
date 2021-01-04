@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#define N 3e4+5
+#define N 1e5+5
 using namespace std;
 
 struct node{

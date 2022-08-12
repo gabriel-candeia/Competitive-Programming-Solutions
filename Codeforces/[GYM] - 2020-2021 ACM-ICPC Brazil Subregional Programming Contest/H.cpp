@@ -23,7 +23,7 @@ ll teste(ll x, ll k){
     ll answ = 0;
     for(int i=0;i<n && k;i++){
         if(arr[i]>x) continue;
-        answ += comb(n-i-1,min(k,n-i-1-k));
+        answ += comb(n-i-1,k);//min(k,n-i-1-k)
         x-=arr[i], k--;
     }
     return answ + (k==0);

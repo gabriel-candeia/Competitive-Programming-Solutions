@@ -1,0 +1,8 @@
+*.txt
+*.exec
+bruto.cpp
+brute.cpp
+gerador.cpp
+generator.cpp
+.git
+*.incompleto

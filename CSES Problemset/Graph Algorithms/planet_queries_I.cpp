@@ -1,11 +1,13 @@
 #include<bits/stdc++.h>
 #define maxn int(2e5+5)
 #define LOG 32
+#define fastio() ios_base::sync_with_stdio(false), cin.tie(NULL)
 using namespace std;
 
 int n, q, p[maxn][LOG], x, d;
 
 int main(){
+    fastio();
     cin >> n >> q;  
     
     for(int i=1;i<=n;i++)

@@ -1,43 +1,47 @@
 #include <bits/stdc++.h>
+#define maxn 30005
+#define maxm 101
+#define ll long long
 using namespace std;
 
-#define maxn 1005
-
 struct edge{
-  int v, c, f;
+  ll u, v, c, f;
   
   edge(){}
   
-  edge(int v, int c){
+  edge(ll u, ll v, ll c){
+    this->u = u;
     this->v = v;
     this->c = c;
     f = 0;
   }
 };
 
+ll cnt = 0;
+ll in[maxm][maxm], out[maxm][maxm];
 const int inf = 0x3f3f3f3f;
-int t, n, m;
-vector<int> adj[maxn];
+ll t, n, m;
+vector<ll> adj[maxn];
 vector<edge> edges;
-int dist[maxn], ptr[maxn];
-char grid[maxn][maxn];
+vector<ll> dist, ptr;
+char grid[maxm][maxm];
 
-void add(int u, int v, int w){
-  edges.push_back(edge(v,w));
+void add(ll u, ll v, ll w){
+  edges.push_back(edge(u,v,w));
   adj[u].push_back(edges.size()-1);
-  edges.push_back(edge(u,w));
+  edges.push_back(edge(v,u,0));
   adj[v].push_back(edges.size()-1);
 }
 
-int dfs(int s, int t, int f){
+ll dfs(ll s, ll t, ll f){
   if(s==t)
     return f;
-  for(int &i = ptr[s]; i < adj[s].size(); i++){
-    int e = adj[s][i];
-    if(dist[edges[e].v] == dist[s]+1 && (edges[e].c - edges[e].f > 0)){
-      if(int x = dfs(edges[e].v,t,min(f,edges[e].c-edges[e].f))){
-          edges[e].f += x;
-          edges[e^1].f -= x;
+  for(ll &i = ptr[s]; i < adj[s].size(); i++){
+    ll e = adj[s][i];
+    if(dist[edges[e].v] == dist[s]+1 && edges[e].c  > 0){
+      if(ll x = dfs(edges[e].v,t,min(f,edges[e].c))){
+          edges[e].c -= x;
+          edges[e^1].c += x;
           return x;
       }
     }
@@ -45,15 +49,15 @@ int dfs(int s, int t, int f){
   return 0;
 }
 
-bool bfs(int s, int t){
-    queue <int> q;
-    memset(dist, inf, sizeof dist);
+bool bfs(ll s, ll t){
+    queue <ll> q;
+    dist.assign(maxn,inf);
     dist[s] = 0;
     q.push(s);
     while(!q.empty()){
         s = q.front(), q.pop();
         for(auto e : adj[s]){ 
-            if(dist[edges[e].v] == inf && (edges[e].c - edges[e].f > 0)){
+            if(dist[edges[e].v] == inf && edges[e].c > 0){
                 dist[edges[e].v] = 1+dist[s];
                 q.push(edges[e].v);
             }
@@ -62,66 +66,83 @@ bool bfs(int s, int t){
     return dist[t] < inf;
 }
 
-int Dinic(int s, int t){
-    for(int i=0;i<edges.size();i++)
+ll Dinic(ll s, ll t){
+    for(ll i=0;i<edges.size();i++)
       edges[i].f = 0;
-    int maxflow = 0;
+    ll maxflow = 0;
     while(bfs(s, t)){
-        memset(ptr, 0, sizeof ptr);
-        while(int f = dfs(s, t, inf)){
+        ptr.assign(maxn,0);
+        while(ll f = dfs(s, t, inf)){
             maxflow += f;
         }
     }
     return maxflow;
 }
 
-bool ok(int x, int y){
+bool ok(ll x, ll y){
     return (x>=0 && y>=0 && x<n && y<m && grid[x][y]!='#');
 }
 
+
 int main(){
   cin >> n >> m;
-  int mp[2] = {0,0}, dx[4] = {0,0,1,-1}, dy[4] = {1,-1,0,0};
-  
-  for(int i=0;i<n;i++){
-    for(int j=0;j<m;j++){
+  ll dx[4] = {0,0,1,-1}, dy[4] = {1,-1,0,0};
+
+  cnt = 2;
+  for(ll i=0;i<n;i++){
+    for(ll j=0;j<m;j++){
         cin >> grid[i][j];
+        if(grid[i][j]=='#') continue;
         if(grid[i][j]=='1')
-            mp['1'-'1'] = i*m+j;
-        if(grid[i][j]=='2')
-            mp['2'-'1'] = i*m+j;
+          in[i][j] = out[i][j] = ++cnt;
+        else if(grid[i][j]=='2')
+          in[i][j] = out[i][j] = ++cnt;
+        else{
+          in[i][j] = ++cnt; out[i][j] = ++cnt;
+        }
     }
   }
 
-
-  for(int i=0;i<n;i++){
-    for(int j=0;j<m;j++){
-        int atual = i*m+j;
-        if(grid[i][j]=='1')
-            atual = mp[0];
-        else if(grid[i][j]=='2')
-            atual = mp[1];
-        for(int k=0;k<4;k++){
-            int nx = i+dx[k], ny = j+dy[k];
-            if(ok(nx,ny) && (grid[nx][ny]!=grid[i][j] || (grid[i][j]!='1'&&grid[i][j]!='2'))){
-                add(atual,nx*m+ny,1);
-                add(nx*m+ny,atual,1);
+  for(ll i=0;i<n;i++){
+    for(ll j=0;j<m;j++){
+        if(grid[i][j]=='#') continue;
+        if(grid[i][j]=='1'){
+          add(1,in[i][j],inf);
+        }
+        if(grid[i][j]=='2'){
+          add(out[i][j],2,inf);
+        }
+        ll l = in[i][j], r = out[i][j];
+        if(l!=r){
+          add(l,r,1);
+        }
+        for(ll k=0;k<4;k++){
+            ll nx = i+dx[k], ny = j+dy[k];
+            if(ok(nx,ny) && !((grid[i][j]=='1' && grid[nx][ny]=='2') || (grid[i][j]=='2' && grid[nx][ny]=='1')) && (nx>=i && ny>=j)){
+                if(r!=2 && in[nx][ny]!=1){
+                  add(r,in[nx][ny],inf);
+                }
+                add(out[nx][ny],l,inf);
+                //if(l!=1 && out[nx][ny]!=2)
+                  //
             }
         }
     }
   }
-
-  cout << Dinic(mp[0],mp[1]) << '\n';
-  for(int u=1;u<=n*m;u++){
-    for(auto v:adj[u]){
-        if(edges[v].c==edges[v].f && grid[u/m][u%m]=='.'){
-            grid[u/m][u%m] = '%';
-        }
+  
+  cout << Dinic(1,2) <<"\n";
+  for(ll i=0;i<n;i++){
+    for(ll j=0;j<m;j++){
+      if(grid[i][j]!='.') continue;
+      ll u = in[i][j];
+      if(dist[in[i][j]]!=inf && dist[out[i][j]]==inf){  
+        grid[i][j] = '%';
+      }
     }
   }
 
-  for(int i=0;i<n;i++){
-    for(int j=0;j<m;j++){
+  for(ll i=0;i<n;i++){
+    for(ll j=0;j<m;j++){
         cout << grid[i][j];
     }
     cout<<'\n';
@@ -129,3 +150,4 @@ int main(){
 
   return 0;
 }
+ 
